@@ -70,54 +70,63 @@ export default function GraficosPage() {
     };
 
     return (
-        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-            {/* MENU DE NAVEGAÇÃO */}
+        <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+            {/* MENU DE NAVEGAÇÃO ATUALIZADO */}
             <div style={{
                 display: 'flex',
                 justifyContent: 'center',
-                gap: '20px',
+                gap: '15px',
                 marginBottom: '30px',
                 padding: '15px',
-                backgroundColor: '#fff',
+                backgroundColor: '#f8f9fa',
                 borderRadius: '8px',
                 border: '1px solid #e9ecef',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                flexWrap: 'wrap'
             }}>
                 <button 
                     onClick={() => navigate('/')}
                     style={{
-                        padding: '12px 24px',
+                        padding: '10px 20px',
                         backgroundColor: location.pathname === '/' ? '#1e4a8b' : '#2c5aa0',
                         color: 'white',
                         border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
                         fontWeight: 'bold',
-                        fontSize: '16px',
-                        transition: 'all 0.3s ease'
+                        fontSize: '14px'
                     }}
-                    onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
                 >
                     🏠 Gerenciamento
                 </button>
                 <button 
-                    onClick={() => navigate('/graficos')}
+                    onClick={() => navigate('/consultas')}
                     style={{
-                        padding: '12px 24px',
-                        backgroundColor: location.pathname === '/graficos' ? '#218838' : '#28a745',
+                        padding: '10px 20px',
+                        backgroundColor: location.pathname === '/consultas' ? '#218838' : '#28a745',
                         color: 'white',
                         border: 'none',
                         borderRadius: '6px',
                         cursor: 'pointer',
                         fontWeight: 'bold',
-                        fontSize: '16px',
-                        transition: 'all 0.3s ease'
+                        fontSize: '14px'
                     }}
-                    onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
                 >
-                    📊 Ver Gráficos
+                    🔍 Consultas
+                </button>
+                <button 
+                    onClick={() => navigate('/graficos')}
+                    style={{
+                        padding: '10px 20px',
+                        backgroundColor: location.pathname === '/graficos' ? '#fd7e14' : '#ffc107',
+                        color: 'black',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                    }}
+                >
+                    📊 Gráficos
                 </button>
             </div>
 

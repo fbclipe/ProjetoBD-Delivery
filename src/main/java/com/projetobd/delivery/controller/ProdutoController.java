@@ -43,20 +43,30 @@ public class ProdutoController {
         return produtoService.listarTodos();
     }
 
-    // Buscar produtos de um restaurante
-    @GetMapping("/restaurante/{idRestaurante}")
-    public List<Produto> buscarPorRestaurante(@PathVariable long idRestaurante) {
-        return produtoService.buscarPorRestaurante(idRestaurante);
-    }
-
-    // Produtos mais caros que determinado valor
-    @GetMapping("/caros")
-    public List<Produto> produtosMaisCaros(@RequestParam double precoMin) {
-        return produtoService.produtosMaisCaros(precoMin);
-    }
-
     @GetMapping("/{id}")
     public Produto buscarPorId(@PathVariable long id) {
     return produtoService.buscarPorId(id);
+}
+
+@GetMapping("/com-restaurante")
+public List<Produto> produtosComRestaurante() {
+    return produtoService.produtosComRestaurante();
+}
+
+@GetMapping("/faixa-preco")
+public List<Produto> produtosPorFaixaPreco(
+        @RequestParam double precoMin, 
+        @RequestParam double precoMax) {
+    return produtoService.produtosPorFaixaPreco(precoMin, precoMax);
+}
+
+@GetMapping("/restaurantes-contagem")
+public List<String> restaurantesComContagemProdutos() {
+    return produtoService.restaurantesComContagemProdutos();
+}
+
+@GetMapping("/media-precos-cidade")
+public List<String> mediaPrecosPorCidade() {
+    return produtoService.mediaPrecosPorCidade();
 }
 }

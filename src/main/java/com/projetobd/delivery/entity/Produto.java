@@ -5,15 +5,17 @@ public class Produto {
     private Long idProduto;
     private String nome;
     private Double preco;
-    private Long idRestaurante; // FK para Restaurante
+    private Long idRestaurante;
+    private String nomeRestaurante;
 
     public Produto() {}
 
-    public Produto(Long idProduto, String nome, Double preco, Long idRestaurante) {
+    public Produto(Long idProduto, String nome, Double preco, Long idRestaurante, String nomeRestaurante) {
         this.idProduto = idProduto;
         this.nome = nome;
         this.preco = preco;
         this.idRestaurante = idRestaurante;
+        this.nomeRestaurante = nomeRestaurante;
     }
 
     // Getters e Setters
@@ -28,4 +30,7 @@ public class Produto {
 
     public Long getIdRestaurante() { return idRestaurante; }
     public void setIdRestaurante(Long idRestaurante) { this.idRestaurante = idRestaurante; }
+
+    public String getNomeRestaurante() { return nomeRestaurante; }
+    public void setNomeRestaurante(String nomeRestaurante) { this.nomeRestaurante = nomeRestaurante; }
 }

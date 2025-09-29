@@ -19,8 +19,8 @@ public class ProdutoService {
     public int atualizarProduto(Produto p) { return produtoRepository.atualizar(p); }
     public int deletarProduto(long id) { return produtoRepository.deletar(id); }
     public List<Produto> listarTodos() { return produtoRepository.listar(); }
-
-    // Consultas personalizadas
-    public List<Produto> buscarPorRestaurante(long idRestaurante) { return produtoRepository.buscarPorRestaurante(idRestaurante); }
-    public List<Produto> produtosMaisCaros(double precoMin) { return produtoRepository.produtosMaisCaros(precoMin); }
+    public List<Produto> produtosComRestaurante() { return produtoRepository.produtosComRestaurante(); }
+    public List<Produto> produtosPorFaixaPreco(double precoMin, double precoMax) { return produtoRepository.produtosPorFaixaPreco(precoMin, precoMax); }
+    public List<String> restaurantesComContagemProdutos() { return produtoRepository.restaurantesComContagemProdutos(); }
+    public List<String> mediaPrecosPorCidade() { return produtoRepository.mediaPrecosPorCidade(); }
 }
