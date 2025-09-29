@@ -1,6 +1,5 @@
 package com.projetobd.delivery.repository;
 
-
 import com.projetobd.delivery.entity.Produto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -31,6 +30,16 @@ public class ProdutoRepository {
             return ps;
         }, keyHolder);
         return keyHolder.getKey().longValue();
+    }
+
+    // Buscar produto por ID - NOVO MÉTODO
+    public Produto buscarPorId(long id) {
+        String sql = "SELECT id_produto AS idProduto, nome, preco, id_restaurante AS idRestaurante FROM produto WHERE id_produto=?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Produto.class), id);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     // Atualizar produto

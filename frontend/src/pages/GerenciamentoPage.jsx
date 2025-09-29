@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { listarProdutos, criarProduto, deletarProduto } from "../services/produtoService";
-import { listarRestaurantes, criarRestaurante, deletarRestaurante } from "../services/restauranteService";
+import { 
+    listarProdutos, 
+    criarProduto, 
+    deletarProduto, 
+    buscarProdutoPorId, 
+    atualizarProduto 
+} from "../services/produtoService";
+import { 
+    listarRestaurantes, 
+    criarRestaurante, 
+    deletarRestaurante, 
+    buscarRestaurantePorId, 
+    atualizarRestaurante 
+} from "../services/restauranteService";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function GerenciamentoPage() {
@@ -12,6 +24,7 @@ export default function GerenciamentoPage() {
     const [nomeProduto, setNomeProduto] = useState("");
     const [preco, setPreco] = useState("");
     const [idRestaurante, setIdRestaurante] = useState("");
+    const [editandoProduto, setEditandoProduto] = useState(null);
 
     // Estados para Restaurantes
     const [restaurantes, setRestaurantes] = useState([]);
@@ -22,6 +35,7 @@ export default function GerenciamentoPage() {
     const [numero, setNumero] = useState("");
     const [bairro, setBairro] = useState("");
     const [cep, setCep] = useState("");
+    const [editandoRestaurante, setEditandoRestaurante] = useState(null);
 
     // Carregar dados ao iniciar
     useEffect(() => {
@@ -29,7 +43,7 @@ export default function GerenciamentoPage() {
         carregarRestaurantes();
     }, []);
 
-    // Funções para Produtos
+    // ========== FUNÇÕES PARA PRODUTOS ==========
     const carregarProdutos = async () => {
         try {
             const res = await listarProdutos();
@@ -46,12 +60,41 @@ export default function GerenciamentoPage() {
                 preco: parseFloat(preco), 
                 idRestaurante: parseInt(idRestaurante) 
             });
-            setNomeProduto(""); 
-            setPreco(""); 
-            setIdRestaurante("");
+            limparFormularioProduto();
             carregarProdutos();
         } catch (error) {
             console.error("Erro ao criar produto:", error);
+        }
+    };
+
+    const handleEditarProduto = async (id) => {
+    console.log("🔄 Editando produto ID:", id);
+    
+    // Busca apenas na lista local (mais confiável)
+    const produto = produtos.find(p => p.idProduto === id);
+    if (produto) {
+        setNomeProduto(produto.nome || "");
+        setPreco(produto.preco?.toString() || "");
+        setIdRestaurante(produto.idRestaurante?.toString() || "");
+        setEditandoProduto(id);
+        console.log("✅ Produto carregado para edição:", produto);
+    } else {
+        console.error("❌ Produto não encontrado");
+    }
+};
+
+    const handleAtualizarProduto = async () => {
+        try {
+            await atualizarProduto(editandoProduto, { 
+                nome: nomeProduto, 
+                preco: parseFloat(preco), 
+                idRestaurante: parseInt(idRestaurante) 
+            });
+            limparFormularioProduto();
+            setEditandoProduto(null);
+            carregarProdutos();
+        } catch (error) {
+            console.error("Erro ao atualizar produto:", error);
         }
     };
 
@@ -64,7 +107,18 @@ export default function GerenciamentoPage() {
         }
     };
 
-    // Funções para Restaurantes
+    const limparFormularioProduto = () => {
+        setNomeProduto("");
+        setPreco("");
+        setIdRestaurante("");
+    };
+
+    const cancelarEdicaoProduto = () => {
+        setEditandoProduto(null);
+        limparFormularioProduto();
+    };
+
+    // ========== FUNÇÕES PARA RESTAURANTES ==========
     const carregarRestaurantes = async () => {
         try {
             const res = await listarRestaurantes();
@@ -85,16 +139,49 @@ export default function GerenciamentoPage() {
                 bairro: bairro,
                 cep: cep
             });
-            setNomeRestaurante("");
-            setTipoCulinaria("");
-            setCidade("");
-            setRua("");
-            setNumero("");
-            setBairro("");
-            setCep("");
+            limparFormularioRestaurante();
             carregarRestaurantes();
         } catch (error) {
             console.error("Erro ao criar restaurante:", error);
+        }
+    };
+
+    const handleEditarRestaurante = async (id) => {
+    console.log("🔄 Editando restaurante ID:", id);
+    
+    // Busca apenas na lista local
+    const restaurante = restaurantes.find(r => r.idRestaurante === id);
+    if (restaurante) {
+        setNomeRestaurante(restaurante.nome || "");
+        setTipoCulinaria(restaurante.tipoCulinaria || "");
+        setCidade(restaurante.cidade || "");
+        setRua(restaurante.rua || "");
+        setNumero(restaurante.numero?.toString() || "");
+        setBairro(restaurante.bairro || "");
+        setCep(restaurante.cep || "");
+        setEditandoRestaurante(id);
+        console.log("✅ Restaurante carregado para edição:", restaurante);
+    } else {
+        console.error("❌ Restaurante não encontrado");
+    }
+};
+
+    const handleAtualizarRestaurante = async () => {
+        try {
+            await atualizarRestaurante(editandoRestaurante, { 
+                nome: nomeRestaurante,
+                tipoCulinaria: tipoCulinaria,
+                cidade: cidade,
+                rua: rua,
+                numero: parseInt(numero),
+                bairro: bairro,
+                cep: cep
+            });
+            limparFormularioRestaurante();
+            setEditandoRestaurante(null);
+            carregarRestaurantes();
+        } catch (error) {
+            console.error("Erro ao atualizar restaurante:", error);
         }
     };
 
@@ -105,6 +192,21 @@ export default function GerenciamentoPage() {
         } catch (error) {
             console.error("Erro ao deletar restaurante:", error);
         }
+    };
+
+    const limparFormularioRestaurante = () => {
+        setNomeRestaurante("");
+        setTipoCulinaria("");
+        setCidade("");
+        setRua("");
+        setNumero("");
+        setBairro("");
+        setCep("");
+    };
+
+    const cancelarEdicaoRestaurante = () => {
+        setEditandoRestaurante(null);
+        limparFormularioRestaurante();
     };
 
     return (
@@ -158,7 +260,9 @@ export default function GerenciamentoPage() {
             
             {/* Seção de Restaurantes */}
             <div style={{ marginBottom: '40px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-                <h2 style={{ color: '#2c5aa0' }}>Gerenciar Restaurantes</h2>
+                <h2 style={{ color: '#2c5aa0' }}>
+                    {editandoRestaurante ? '✏️ Editar Restaurante' : '🏠 Gerenciar Restaurantes'}
+                </h2>
                 
                 <div style={{ marginBottom: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                     <input 
@@ -206,59 +310,136 @@ export default function GerenciamentoPage() {
                     />
                 </div>
                 
-                <button 
-                    onClick={handleCriarRestaurante}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#2c5aa0',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                    }}
-                >
-                    Criar Restaurante
-                </button>
-
-                <h3 style={{ marginTop: '20px' }}>Restaurantes Cadastrados:</h3>
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {restaurantes.map(r => (
-                        <li key={r.idRestaurante} style={{
-                            padding: '10px',
-                            margin: '5px 0',
-                            backgroundColor: '#f9f9f9',
-                            border: '1px solid #eee',
-                            borderRadius: '4px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}>
-                            <div>
-                                <strong>{r.nome}</strong> - {r.tipoCulinaria} - {r.cidade}
-                                <br />
-                                <small>{r.rua}, {r.numero} - {r.bairro} - CEP: {r.cep}</small>
-                            </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    {editandoRestaurante ? (
+                        <>
                             <button 
-                                onClick={() => handleDeletarRestaurante(r.idRestaurante)}
+                                onClick={handleAtualizarRestaurante}
                                 style={{
-                                    padding: '5px 10px',
-                                    backgroundColor: '#dc3545',
+                                    padding: '10px 20px',
+                                    backgroundColor: '#28a745',
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '4px',
                                     cursor: 'pointer'
                                 }}
                             >
-                                Deletar
+                                ✅ Atualizar
                             </button>
-                        </li>
-                    ))}
-                </ul>
+                            <button 
+                                onClick={cancelarEdicaoRestaurante}
+                                style={{
+                                    padding: '10px 20px',
+                                    backgroundColor: '#6c757d',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                ❌ Cancelar
+                            </button>
+                        </>
+                    ) : (
+                        <button 
+                            onClick={handleCriarRestaurante}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: '#2c5aa0',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            ➕ Criar Restaurante
+                        </button>
+                    )}
+                </div>
+
+                <h3 style={{ marginTop: '20px' }}>Restaurantes Cadastrados:</h3>
+<ul style={{ listStyle: 'none', padding: 0 }}>
+    {restaurantes.map(r => (
+        <li key={r.idRestaurante} style={{
+            padding: '15px',
+            margin: '8px 0',
+            backgroundColor: '#f9f9f9',
+            border: '1px solid #eee',
+            borderRadius: '6px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        }}>
+            <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                    <span style={{
+                        backgroundColor: '#2c5aa0',
+                        color: 'white',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        marginRight: '10px'
+                    }}>
+                        ID: {r.idRestaurante}
+                    </span>
+                    <strong style={{ fontSize: '16px', color: '#2c5aa0' }}>{r.nome}</strong>
+                </div>
+                <div style={{ fontSize: '14px', color: '#555' }}>
+                    <span>🍽️ {r.tipoCulinaria}</span>
+                    <span style={{ margin: '0 10px' }}>•</span>
+                    <span>🏙️ {r.cidade}</span>
+                </div>
+                <div style={{ fontSize: '12px', color: '#777', marginTop: '5px' }}>
+                    📍 {r.rua}, {r.numero} - {r.bairro} 
+                    <span style={{ margin: '0 10px' }}>•</span>
+                    📮 CEP: {r.cep}
+                </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                    onClick={() => handleEditarRestaurante(r.idRestaurante)}
+                    style={{
+                        padding: '6px 12px',
+                        backgroundColor: '#ffc107',
+                        color: 'black',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontWeight: 'bold'
+                    }}
+                    title="Editar restaurante"
+                >
+                    ✏️ Editar
+                </button>
+                <button 
+                    onClick={() => handleDeletarRestaurante(r.idRestaurante)}
+                    style={{
+                        padding: '6px 12px',
+                        backgroundColor: '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontWeight: 'bold'
+                    }}
+                    title="Deletar restaurante"
+                >
+                    🗑️ Deletar
+                </button>
+            </div>
+        </li>
+    ))}
+</ul>
             </div>
 
             {/* Seção de Produtos */}
             <div style={{ padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-                <h2 style={{ color: '#28a745' }}>Gerenciar Produtos</h2>
+                <h2 style={{ color: '#28a745' }}>
+                    {editandoProduto ? '✏️ Editar Produto' : '📦 Gerenciar Produtos'}
+                </h2>
                 
                 <div style={{ marginBottom: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                     <input 
@@ -284,19 +465,52 @@ export default function GerenciamentoPage() {
                     />
                 </div>
                 
-                <button 
-                    onClick={handleCriarProduto}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#28a745',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                    }}
-                >
-                    Criar Produto
-                </button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    {editandoProduto ? (
+                        <>
+                            <button 
+                                onClick={handleAtualizarProduto}
+                                style={{
+                                    padding: '10px 20px',
+                                    backgroundColor: '#28a745',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                ✅ Atualizar
+                            </button>
+                            <button 
+                                onClick={cancelarEdicaoProduto}
+                                style={{
+                                    padding: '10px 20px',
+                                    backgroundColor: '#6c757d',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                ❌ Cancelar
+                            </button>
+                        </>
+                    ) : (
+                        <button 
+                            onClick={handleCriarProduto}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: '#28a745',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            ➕ Criar Produto
+                        </button>
+                    )}
+                </div>
 
                 <h3 style={{ marginTop: '20px' }}>Produtos Cadastrados:</h3>
                 <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -314,19 +528,34 @@ export default function GerenciamentoPage() {
                             <div>
                                 <strong>{p.nome}</strong> - R$ {p.preco?.toFixed(2)} - Restaurante ID: {p.idRestaurante}
                             </div>
-                            <button 
-                                onClick={() => handleDeletarProduto(p.idProduto)}
-                                style={{
-                                    padding: '5px 10px',
-                                    backgroundColor: '#dc3545',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Deletar
-                            </button>
+                            <div style={{ display: 'flex', gap: '5px' }}>
+                                <button 
+                                    onClick={() => handleEditarProduto(p.idProduto)}
+                                    style={{
+                                        padding: '5px 10px',
+                                        backgroundColor: '#ffc107',
+                                        color: 'black',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    ✏️ Editar
+                                </button>
+                                <button 
+                                    onClick={() => handleDeletarProduto(p.idProduto)}
+                                    style={{
+                                        padding: '5px 10px',
+                                        backgroundColor: '#dc3545',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    🗑️ Deletar
+                                </button>
+                            </div>
                         </li>
                     ))}
                 </ul>

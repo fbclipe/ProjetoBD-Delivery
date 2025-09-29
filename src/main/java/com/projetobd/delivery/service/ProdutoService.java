@@ -15,6 +15,7 @@ public class ProdutoService {
 
     // CRUD
     public long criarProduto(Produto p) { return produtoRepository.inserir(p); }
+    public Produto buscarPorId(long id) { return produtoRepository.buscarPorId(id); } // NOVO MÉTODO
     public int atualizarProduto(Produto p) { return produtoRepository.atualizar(p); }
     public int deletarProduto(long id) { return produtoRepository.deletar(id); }
     public List<Produto> listarTodos() { return produtoRepository.listar(); }

@@ -10,3 +10,4 @@ export const atualizarProduto = (id, data) => produtoApi.put(`/produtos/${id}`, 
 export const deletarProduto = (id) => produtoApi.delete(`/produtos/${id}`);
 export const buscarPorRestaurante = (idRestaurante) => produtoApi.get(`/produtos/restaurante/${idRestaurante}`);
 export const produtosMaisCaros = (precoMin) => produtoApi.get(`/produtos/caros?precoMin=${precoMin}`);
+export const buscarProdutoPorId = (id) => produtoApi.get(`/${id}`);

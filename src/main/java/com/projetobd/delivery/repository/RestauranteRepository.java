@@ -76,5 +76,14 @@ public class RestauranteRepository {
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), "%" + nome + "%");
     }
 
+    public Restaurante buscarPorId(long id) {
+    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, cep, cidade, rua, numero, bairro FROM restaurante WHERE id_restaurante=?";
+    try {
+        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Restaurante.class), id);
+    } catch (Exception e) {
+        return null;
+    }
+}
+
 
 }

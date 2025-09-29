@@ -54,4 +54,9 @@ public class ProdutoController {
     public List<Produto> produtosMaisCaros(@RequestParam double precoMin) {
         return produtoService.produtosMaisCaros(precoMin);
     }
+
+    @GetMapping("/{id}")
+    public Produto buscarPorId(@PathVariable long id) {
+    return produtoService.buscarPorId(id);
+}
 }

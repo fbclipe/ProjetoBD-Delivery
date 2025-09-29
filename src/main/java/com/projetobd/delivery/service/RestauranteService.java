@@ -33,6 +33,10 @@ public class RestauranteService {
         return restauranteRepository.listar();
     }
 
+    public Restaurante buscarPorId(long id) { // NOVO MÉTODO
+        return restauranteRepository.buscarPorId(id);
+    }
+
     // Consultas personalizadas
 
     public List<Restaurante> buscarPorCidade(String cidade) {

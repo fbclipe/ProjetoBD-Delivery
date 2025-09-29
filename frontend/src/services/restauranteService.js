@@ -13,3 +13,4 @@ export const deletarRestaurante = (id) => restauranteApi.delete(`/restaurantes/$
 export const buscarPorCidade = (cidade) => restauranteApi.get(`/restaurantes/cidade/${cidade}`);
 export const buscarPorNome = (nome) => restauranteApi.get(`/restaurantes/nome?nome=${nome}`);
 export const contarPorCidade = () => restauranteApi.get("/restaurantes/contagem/cidade");
+export const buscarRestaurantePorId = (id) => restauranteApi.get(`/${id}`);
