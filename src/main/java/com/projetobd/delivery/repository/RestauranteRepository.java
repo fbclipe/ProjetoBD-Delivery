@@ -19,22 +19,22 @@ public class RestauranteRepository {
     private JdbcTemplate jdbcTemplate;
 
     // Inserir restaurante e retornar ID gerado
-    public long inserir(Restaurante r) {
-        String sql = "INSERT INTO restaurante (nome, tipo_culinaria, cep, cidade, rua, numero, bairro) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, r.getNome());
-            ps.setString(2, r.getTipoCulinaria());
-            ps.setString(3, r.getCep());
-            ps.setString(4, r.getCidade());
-            ps.setString(5, r.getRua());
-            ps.setString(6, String.valueOf(r.getNumero()));
-            ps.setString(7, r.getBairro());
-            return ps;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
-    }
+   public long inserir(Restaurante r) {
+    String sql = "INSERT INTO restaurante (nome, tipo_culinaria, cep, cidade, rua, numero, bairro) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+    jdbcTemplate.update(connection -> {
+        PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        ps.setString(1, r.getNome());
+        ps.setString(2, r.getTipoCulinaria());
+        ps.setString(3, r.getCep());
+        ps.setString(4, r.getCidade());
+        ps.setString(5, r.getRua());
+        ps.setInt(6, r.getNumero()); // CORRIGIDO: usar setInt
+        ps.setString(7, r.getBairro());
+        return ps;
+    }, keyHolder);
+    return keyHolder.getKey().longValue();
+}
 
     // Atualizar restaurante
     public int atualizar(Restaurante r) {

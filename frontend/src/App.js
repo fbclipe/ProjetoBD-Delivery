@@ -1,18 +1,19 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import RestaurantesPage from "./pages/RestaurantesPage";
-import ProdutosPage from "./pages/ProdutosPage";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import GerenciamentoPage from './pages/GerenciamentoPage';
+import GraficosPage from './pages/GraficosPage';
 
-export default function App() {
-    return (
-        <Router>
-            <nav>
-                <Link to="/">Restaurantes</Link> | <Link to="/produtos">Produtos</Link>
-            </nav>
-            <Routes>
-                <Route path="/" element={<RestaurantesPage />} />
-                <Route path="/produtos" element={<ProdutosPage />} />
-            </Routes>
-        </Router>
-    );
+function App() {
+  return (
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<GerenciamentoPage />} />
+          <Route path="/graficos" element={<GraficosPage />} />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
+
+export default App;

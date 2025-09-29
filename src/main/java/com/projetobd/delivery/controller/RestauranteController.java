@@ -24,13 +24,12 @@ public class RestauranteController {
     }
 
     // Atualizar restaurante
-    @PutMapping("/{id}")
-    public String atualizar(@PathVariable int id, @RequestBody Restaurante r) {
-        r.setIdRestaurante(id);
-        int atualizado = restauranteService.atualizarRestaurante(r);
-        return atualizado > 0 ? "Restaurante atualizado" : "Restaurante não encontrado";
-    }
-
+  @PutMapping("/{id}")
+public String atualizar(@PathVariable long id, @RequestBody Restaurante r) { // Mude para long
+    r.setIdRestaurante((int) id); // Ou mude a entidade para usar Long
+    int atualizado = restauranteService.atualizarRestaurante(r);
+    return atualizado > 0 ? "Restaurante atualizado" : "Restaurante não encontrado";
+}
     // Deletar restaurante
     @DeleteMapping("/{id}")
     public String deletar(@PathVariable int id) {

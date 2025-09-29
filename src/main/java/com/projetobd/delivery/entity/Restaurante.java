@@ -1,7 +1,7 @@
 package com.projetobd.delivery.entity;
 
 public class Restaurante {
-    private int idRestaurante;
+    private Long idRestaurante;
     private String nome;
     private String tipoCulinaria;
     private String cep;
@@ -11,10 +11,10 @@ public class Restaurante {
     private String bairro;
 
     // Getters e Setters
-    public int getIdRestaurante() {
+    public long getIdRestaurante() {
         return idRestaurante;
     }
-    public void setIdRestaurante(int idRestaurante) {
+    public void setIdRestaurante(long idRestaurante) {
         this.idRestaurante = idRestaurante;
     }
 

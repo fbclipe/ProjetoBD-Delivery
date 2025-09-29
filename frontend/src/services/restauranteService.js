@@ -1,13 +1,15 @@
 import axios from "axios";
 
+// CORREÇÃO: Remova "/restaurantes" da baseURL
 const restauranteApi = axios.create({
-    baseURL: "http://localhost:8080/restaurantes"
+    baseURL: "http://localhost:8080"  // ← MUDEI AQUI
 });
 
-export const listarRestaurantes = () => restauranteApi.get("/");
-export const criarRestaurante = (data) => restauranteApi.post("/", data);
-export const atualizarRestaurante = (id, data) => restauranteApi.put(`/${id}`, data);
-export const deletarRestaurante = (id) => restauranteApi.delete(`/${id}`);
-export const buscarPorCidade = (cidade) => restauranteApi.get(`/cidade/${cidade}`);
-export const buscarPorNome = (nome) => restauranteApi.get(`/nome?nome=${nome}`);
-export const contarPorCidade = () => restauranteApi.get("/contagem/cidade");
+// Agora os endpoints estão corretos:
+export const listarRestaurantes = () => restauranteApi.get("/restaurantes");
+export const criarRestaurante = (data) => restauranteApi.post("/restaurantes", data);
+export const atualizarRestaurante = (id, data) => restauranteApi.put(`/restaurantes/${id}`, data);
+export const deletarRestaurante = (id) => restauranteApi.delete(`/restaurantes/${id}`);
+export const buscarPorCidade = (cidade) => restauranteApi.get(`/restaurantes/cidade/${cidade}`);
+export const buscarPorNome = (nome) => restauranteApi.get(`/restaurantes/nome?nome=${nome}`);
+export const contarPorCidade = () => restauranteApi.get("/restaurantes/contagem/cidade");
