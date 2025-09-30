@@ -33,14 +33,22 @@ public class ProdutoRepository {
     }
 
     // Buscar produto por ID - NOVO MÉTODO
+    // Buscar produto por ID - CORRIGIDO
     public Produto buscarPorId(long id) {
         String sql = "SELECT id_produto AS idProduto, nome, preco, id_restaurante AS idRestaurante FROM produto WHERE id_produto=?";
-        try {
-            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Produto.class), id);
+            try {
+                return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> 
+                new Produto(
+                rs.getLong("idProduto"),
+                rs.getString("nome"),
+                rs.getDouble("preco"),
+                rs.getLong("idRestaurante"),
+                null  // nomeRestaurante é null pois não estamos fazendo JOIN
+            ), id);
         } catch (Exception e) {
             return null;
-        }
     }
+}
 
     // Atualizar produto
     public int atualizar(Produto p) {

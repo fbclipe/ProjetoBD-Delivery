@@ -49,20 +49,29 @@ public class RestauranteRepository {
     }
 
     // Listar todos os restaurantes
-    public List<Restaurante> listar() {
-        String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, cep, cidade, rua, numero, bairro FROM restaurante";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class));
-    }
+    // Listar todos os restaurantes (CORRIGIDO)
+public List<Restaurante> listar() {
+    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
+                 "cep, cidade, rua, COALESCE(numero, 0) as numero, bairro " +  // ← CORREÇÃO
+                 "FROM restaurante";
+    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class));
+}
 
-    // Consultas personalizadas
+// Buscar por cidade (CORRIGIDO)
+public List<Restaurante> buscarPorCidade(String cidade) {
+    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
+                 "cep, cidade, rua, COALESCE(numero, 0) as numero, bairro " +  // ← CORREÇÃO
+                 "FROM restaurante WHERE cidade=?";
+    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), cidade);
+}
 
-    // Buscar por cidade
-    public List<Restaurante> buscarPorCidade(String cidade) {
-        String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, cep, cidade, rua, numero, bairro " +
-                "FROM restaurante WHERE cidade=?";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), cidade);
-    }
-
+// Buscar por nome (CORRIGIDO)
+public List<Restaurante> buscarPorNome(String nome) {
+    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
+                 "cep, cidade, rua, COALESCE(numero, 0) as numero, bairro " +  // ← CORREÇÃO
+                 "FROM restaurante WHERE nome LIKE ?";
+    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), "%" + nome + "%");
+}
     // Contar restaurantes por cidade (exemplo de agregação)
     public List<String> contarPorCidade() {
         String sql = "SELECT cidade, COUNT(*) AS total FROM restaurante GROUP BY cidade";
@@ -70,11 +79,7 @@ public class RestauranteRepository {
     }
 
     // Buscar restaurante por nome (LIKE)
-    public List<Restaurante> buscarPorNome(String nome) {
-        String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, cep, cidade, rua, numero, bairro " +
-                "FROM restaurante WHERE nome LIKE ?";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), "%" + nome + "%");
-    }
+    
 
     public Restaurante buscarPorId(long id) {
     String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, cep, cidade, rua, numero, bairro FROM restaurante WHERE id_restaurante=?";
@@ -83,6 +88,33 @@ public class RestauranteRepository {
     } catch (Exception e) {
         return null;
     }
+    }
+
+    // RestauranteRepository.java
+
+// CONSULTA 2: Restaurantes por tipo de culinária
+public List<Restaurante> buscarPorTipoCulinaria(String tipoCulinaria) {
+    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
+                 "cep, cidade, rua, numero, bairro FROM restaurante " +
+                 "WHERE tipo_culinaria LIKE ? ORDER BY nome";
+    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), "%" + tipoCulinaria + "%");
+}
+
+// CONSULTA 3: Restaurantes com endereço completo
+public List<String> restaurantesComEnderecoCompleto() {
+    String sql = "SELECT nome, CONCAT(rua, ', ', numero, ' - ', bairro, ', ', cidade, ' - CEP: ', cep) as endereco_completo " +
+                 "FROM restaurante ORDER BY nome";
+    
+    return jdbcTemplate.query(sql, (rs, rowNum) -> 
+        "🏢 " + rs.getString("nome") + " - 📍 " + rs.getString("endereco_completo")
+    );
+}
+
+// CONSULTA 4: Restaurantes ordenados por nome
+public List<Restaurante> restaurantesOrdenadosPorNome() {
+    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
+                 "cep, cidade, rua, numero, bairro FROM restaurante ORDER BY nome ASC";
+    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class));
 }
 
 

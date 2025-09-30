@@ -51,5 +51,17 @@ public class RestauranteService {
         return restauranteRepository.buscarPorNome(nome);
     }
 
+    // RestauranteService.java
+    public List<Restaurante> buscarPorTipoCulinaria(String tipoCulinaria) {
+        return restauranteRepository.buscarPorTipoCulinaria(tipoCulinaria);
+    }
+
+    public List<String> restaurantesComEnderecoCompleto() {
+        return restauranteRepository.restaurantesComEnderecoCompleto();
+    }   
+
+    public List<Restaurante> restaurantesOrdenadosPorNome() {
+        return restauranteRepository.restaurantesOrdenadosPorNome();
+    }
 
 }

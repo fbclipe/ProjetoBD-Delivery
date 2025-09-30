@@ -13,3 +13,6 @@ export const produtosComRestaurante = () => produtoApi.get("/produtos/com-restau
 export const produtosPorFaixaPreco = (precoMin, precoMax) => produtoApi.get(`/produtos/faixa-preco?precoMin=${precoMin}&precoMax=${precoMax}`);
 export const restaurantesComContagemProdutos = () => produtoApi.get("/produtos/restaurantes-contagem");
 export const mediaPrecosPorCidade = () => produtoApi.get("/produtos/media-precos-cidade");
+export const restaurantesComProduto = (nomeProduto) => {
+    return axios.get(`http://localhost:8080/produtos/restaurantes-com-produto?produto=${nomeProduto}`);
+};

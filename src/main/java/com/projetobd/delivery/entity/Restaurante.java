@@ -7,7 +7,7 @@ public class Restaurante {
     private String cep;
     private String cidade;
     private String rua;
-    private int numero;
+    private Integer numero;
     private String bairro;
 
     // Getters e Setters

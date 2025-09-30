@@ -6,14 +6,22 @@ import {
     restaurantesComContagemProdutos, 
     mediaPrecosPorCidade 
 } from "../services/produtoService";
+import { 
+    restaurantesPorCidade,
+    restaurantesPorTipoCulinaria, 
+    restaurantesComEnderecoCompleto,
+    restaurantesOrdenadosPorNome
+} from "../services/restauranteService";
 
 export default function ConsultasPage() {
-    const navigate = useNavigate(); // ← CORRETO: useNavigate para navegação
-    const location = useLocation(); // ← CORRETO: useLocation para saber a página atual
+    const navigate = useNavigate();
+    const location = useLocation();
     const [resultados, setResultados] = useState([]);
     const [carregando, setCarregando] = useState(false);
     const [precoMin, setPrecoMin] = useState('10');
     const [precoMax, setPrecoMax] = useState('50');
+    const [cidadeFiltro, setCidadeFiltro] = useState('');
+    const [culinariaFiltro, setCulinariaFiltro] = useState('');
 
     const executarConsulta = async (consultaFn, parametros = []) => {
         setCarregando(true);
@@ -93,17 +101,161 @@ export default function ConsultasPage() {
             </h1>
             
             <p style={{ textAlign: 'center', color: '#666', marginBottom: '30px' }}>
-                
+                Consultas avançadas de produtos e restaurantes
             </p>
 
+            {/* NOVA SEÇÃO - CONSULTAS DE RESTAURANTES */}
+            <h2 style={{ color: '#333', marginBottom: '20px', borderBottom: '2px solid #007bff', paddingBottom: '10px' }}>
+                🍽️ Consultas de Restaurantes
+            </h2>
             
             <div style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
                 gap: '20px', 
-                marginBottom: '40px',
-                maxWidth: '1200px',
-                margin: '0 auto'
+                marginBottom: '40px'
+            }}>
+                {/* CONSULTA 1: Restaurantes por Cidade */}
+                <div style={{ 
+                    padding: '20px', 
+                    border: '2px solid #17a2b8', 
+                    borderRadius: '8px', 
+                    backgroundColor: '#e3f2fd',
+                    textAlign: 'center'
+                }}>
+                    <h3 style={{ color: '#17a2b8', marginBottom: '15px' }}>🏙️ POR CIDADE</h3>
+                    <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>
+                        Filtre restaurantes por cidade
+                    </p>
+                    <input 
+                        value={cidadeFiltro} 
+                        onChange={(e) => setCidadeFiltro(e.target.value)}
+                        placeholder="Digite a cidade"
+                        style={{ width: '100%', padding: '8px', marginBottom: '10px', textAlign: 'center' }}
+                    />
+                    <button 
+                        onClick={() => executarConsulta(restaurantesPorCidade, [cidadeFiltro])}
+                        disabled={!cidadeFiltro.trim()}
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: cidadeFiltro.trim() ? '#17a2b8' : '#ccc',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: cidadeFiltro.trim() ? 'pointer' : 'not-allowed',
+                            fontWeight: 'bold',
+                            width: '100%'
+                        }}
+                    >
+                        Buscar por Cidade
+                    </button>
+                </div>
+
+                {/* CONSULTA 2: Restaurantes por Tipo de Culinária */}
+                <div style={{ 
+                    padding: '20px', 
+                    border: '2px solid #e83e8c', 
+                    borderRadius: '8px', 
+                    backgroundColor: '#fce4ec',
+                    textAlign: 'center'
+                }}>
+                    <h3 style={{ color: '#e83e8c', marginBottom: '15px' }}>🍳 POR CULINÁRIA</h3>
+                    <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>
+                        Filtre por tipo de culinária
+                    </p>
+                    <input 
+                        value={culinariaFiltro} 
+                        onChange={(e) => setCulinariaFiltro(e.target.value)}
+                        placeholder="Ex: Brasileira, Italiana..."
+                        style={{ width: '100%', padding: '8px', marginBottom: '10px', textAlign: 'center' }}
+                    />
+                    <button 
+                        onClick={() => executarConsulta(restaurantesPorTipoCulinaria, [culinariaFiltro])}
+                        disabled={!culinariaFiltro.trim()}
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: culinariaFiltro.trim() ? '#e83e8c' : '#ccc',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: culinariaFiltro.trim() ? 'pointer' : 'not-allowed',
+                            fontWeight: 'bold',
+                            width: '100%'
+                        }}
+                    >
+                        Buscar por Culinária
+                    </button>
+                </div>
+
+                {/* CONSULTA 3: Restaurantes com Endereço Completo */}
+                <div style={{ 
+                    padding: '20px', 
+                    border: '2px solid #20c997', 
+                    borderRadius: '8px', 
+                    backgroundColor: '#e8f5e8',
+                    textAlign: 'center'
+                }}>
+                    <h3 style={{ color: '#20c997', marginBottom: '15px' }}>📋 LISTA COMPLETA</h3>
+                    <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+                        Todos os restaurantes com endereço completo
+                    </p>
+                    <button 
+                        onClick={() => executarConsulta(restaurantesComEnderecoCompleto)}
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#20c997',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            width: '100%'
+                        }}
+                    >
+                        Ver Todos
+                    </button>
+                </div>
+
+                {/* CONSULTA 4: Restaurantes Ordenados por Nome */}
+                <div style={{ 
+                    padding: '20px', 
+                    border: '2px solid #ff6b6b', 
+                    borderRadius: '8px', 
+                    backgroundColor: '#ffeaea',
+                    textAlign: 'center'
+                }}>
+                    <h3 style={{ color: '#ff6b6b', marginBottom: '15px' }}>🔤 ORDEM ALFABÉTICA</h3>
+                    <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+                        Restaurantes em ordem alfabética
+                    </p>
+                    <button 
+                        onClick={() => executarConsulta(restaurantesOrdenadosPorNome)}
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#ff6b6b',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            width: '100%'
+                        }}
+                    >
+                        Ordenar A-Z
+                    </button>
+                </div>
+            </div>
+
+            {/* SEÇÃO ORIGINAL - CONSULTAS DE PRODUTOS */}
+            <h2 style={{ color: '#333', marginBottom: '20px', borderBottom: '2px solid #28a745', paddingBottom: '10px' }}>
+                📦 Consultas de Produtos
+            </h2>
+            
+            <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+                gap: '20px', 
+                marginBottom: '40px'
             }}>
                 
                 <div style={{ 
@@ -240,9 +392,7 @@ export default function ConsultasPage() {
                 border: '1px solid #ddd', 
                 borderRadius: '8px', 
                 padding: '25px', 
-                backgroundColor: '#fff',
-                maxWidth: '1000px',
-                margin: '0 auto'
+                backgroundColor: '#fff'
             }}>
                 <h3 style={{ color: '#333', marginBottom: '20px', textAlign: 'center' }}>
                     📋 Resultados das Consultas
@@ -267,7 +417,11 @@ export default function ConsultasPage() {
                             }}>
                                 {typeof item === 'object' ? (
                                     <div>
-                                        <strong>{item.nome}</strong> - R$ {item.preco?.toFixed(2)}
+                                        <strong>{item.nome}</strong>
+                                        {item.preco && <span> - R$ {item.preco?.toFixed(2)}</span>}
+                                        {item.tipoCulinaria && <span> - 🍽️ {item.tipoCulinaria}</span>}
+                                        {item.cidade && <span> - 🏙️ {item.cidade}</span>}
+                                        {item.enderecoCompleto && <span> - 📍 {item.enderecoCompleto}</span>}
                                         {item.nomeRestaurante && <span> - 🍽️ {item.nomeRestaurante}</span>}
                                         {item.idRestaurante && <span style={{ float: 'right', color: '#666' }}>ID: {item.idRestaurante}</span>}
                                     </div>

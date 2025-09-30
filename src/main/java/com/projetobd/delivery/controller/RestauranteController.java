@@ -1,6 +1,5 @@
 package com.projetobd.delivery.controller;
 
-
 import com.projetobd.delivery.entity.Restaurante;
 import com.projetobd.delivery.service.RestauranteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +23,13 @@ public class RestauranteController {
     }
 
     // Atualizar restaurante
-  @PutMapping("/{id}")
-public String atualizar(@PathVariable long id, @RequestBody Restaurante r) { // Mude para long
-    r.setIdRestaurante((int) id); // Ou mude a entidade para usar Long
-    int atualizado = restauranteService.atualizarRestaurante(r);
-    return atualizado > 0 ? "Restaurante atualizado" : "Restaurante não encontrado";
-}
+    @PutMapping("/{id}")
+    public String atualizar(@PathVariable long id, @RequestBody Restaurante r) {
+        r.setIdRestaurante((int) id);
+        int atualizado = restauranteService.atualizarRestaurante(r);
+        return atualizado > 0 ? "Restaurante atualizado" : "Restaurante não encontrado";
+    }
+
     // Deletar restaurante
     @DeleteMapping("/{id}")
     public String deletar(@PathVariable int id) {
@@ -43,12 +43,34 @@ public String atualizar(@PathVariable long id, @RequestBody Restaurante r) { // 
         return restauranteService.listarTodos();
     }
 
-    // Buscar por cidade
+    // === NOVOS ENDPOINTS PARA AS CONSULTAS ===
+
+    // CONSULTA 1: Restaurantes por cidade
     @GetMapping("/cidade/{cidade}")
     public List<Restaurante> buscarPorCidade(@PathVariable String cidade) {
         return restauranteService.buscarPorCidade(cidade);
     }
 
+    // CONSULTA 2: Restaurantes por tipo de culinária
+    @GetMapping("/culinaria/{tipoCulinaria}")
+    public List<Restaurante> buscarPorTipoCulinaria(@PathVariable String tipoCulinaria) {
+        return restauranteService.buscarPorTipoCulinaria(tipoCulinaria);
+    }
+
+    // CONSULTA 3: Restaurantes com endereço completo
+    @GetMapping("/endereco-completo")
+    public List<String> restaurantesComEnderecoCompleto() {
+        return restauranteService.restaurantesComEnderecoCompleto();
+    }
+
+    // CONSULTA 4: Restaurantes ordenados por nome
+    @GetMapping("/ordenados-nome")
+    public List<Restaurante> restaurantesOrdenadosPorNome() {
+        return restauranteService.restaurantesOrdenadosPorNome();
+    }
+
+    // === ENDPOINTS EXISTENTES ===
+    
     // Buscar por nome
     @GetMapping("/nome")
     public List<Restaurante> buscarPorNome(@RequestParam String nome) {
@@ -60,6 +82,4 @@ public String atualizar(@PathVariable long id, @RequestBody Restaurante r) { // 
     public List<String> contarPorCidade() {
         return restauranteService.contarPorCidade();
     }
-
-
 }
