@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -43,30 +44,38 @@ public class ProdutoController {
         return produtoService.listarTodos();
     }
 
+    // ENDPOINTS ESPECÍFICOS PRIMEIRO (ANTES DO /{id})
+    @GetMapping("/com-restaurante")
+    public List<Produto> produtosComRestaurante() {
+        return produtoService.produtosComRestaurante();
+    }
+
+    @GetMapping("/faixa-preco")
+    public List<Produto> produtosPorFaixaPreco(
+            @RequestParam double precoMin, 
+            @RequestParam double precoMax) {
+        return produtoService.produtosPorFaixaPreco(precoMin, precoMax);
+    }
+
+    @GetMapping("/restaurantes-contagem")
+    public List<String> restaurantesComContagemProdutos() {
+        return produtoService.restaurantesComContagemProdutos();
+    }
+
+    @GetMapping("/media-precos-cidade")
+    public List<String> mediaPrecosPorCidade() {
+        return produtoService.mediaPrecosPorCidade();
+    }
+
+    // NOVO ENDPOINT: Restaurantes que possuem determinado produto
+    @GetMapping("/restaurantes-com-produto")
+    public List<Map<String, Object>> restaurantesComProduto(@RequestParam String produto) {
+        return produtoService.restaurantesComProduto(produto);
+    }
+
+    // BUSCAR POR ID DEVE SER O ÚLTIMO (PARA EVITAR CONFLITOS)
     @GetMapping("/{id}")
     public Produto buscarPorId(@PathVariable long id) {
-    return produtoService.buscarPorId(id);
-}
-
-@GetMapping("/com-restaurante")
-public List<Produto> produtosComRestaurante() {
-    return produtoService.produtosComRestaurante();
-}
-
-@GetMapping("/faixa-preco")
-public List<Produto> produtosPorFaixaPreco(
-        @RequestParam double precoMin, 
-        @RequestParam double precoMax) {
-    return produtoService.produtosPorFaixaPreco(precoMin, precoMax);
-}
-
-@GetMapping("/restaurantes-contagem")
-public List<String> restaurantesComContagemProdutos() {
-    return produtoService.restaurantesComContagemProdutos();
-}
-
-@GetMapping("/media-precos-cidade")
-public List<String> mediaPrecosPorCidade() {
-    return produtoService.mediaPrecosPorCidade();
-}
+        return produtoService.buscarPorId(id);
+    }
 }

@@ -4,7 +4,8 @@ import {
     produtosComRestaurante, 
     produtosPorFaixaPreco, 
     restaurantesComContagemProdutos, 
-    mediaPrecosPorCidade 
+    mediaPrecosPorCidade,
+    restaurantesComProduto  // NOVA IMPORT
 } from "../services/produtoService";
 import { 
     restaurantesPorCidade,
@@ -22,6 +23,7 @@ export default function ConsultasPage() {
     const [precoMax, setPrecoMax] = useState('50');
     const [cidadeFiltro, setCidadeFiltro] = useState('');
     const [culinariaFiltro, setCulinariaFiltro] = useState('');
+    const [produtoFiltro, setProdutoFiltro] = useState(''); // NOVO ESTADO
 
     const executarConsulta = async (consultaFn, parametros = []) => {
         setCarregando(true);
@@ -104,7 +106,81 @@ export default function ConsultasPage() {
                 Consultas avançadas de produtos e restaurantes
             </p>
 
-            {/* NOVA SEÇÃO - CONSULTAS DE RESTAURANTES */}
+            {/* NOVA SEÇÃO - CONSULTA INTELIGENTE */}
+            <h2 style={{ color: '#333', marginBottom: '20px', borderBottom: '2px solid #ff6b6b', paddingBottom: '10px', textAlign: 'center' }}>
+                🎯 BUSCA INTELIGENTE
+            </h2>
+            
+            <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                gap: '20px', 
+                marginBottom: '40px'
+            }}>
+                {/* NOVA CONSULTA: Restaurantes que vendem determinado produto */}
+                <div style={{ 
+                    padding: '25px', 
+                    border: '2px solid #ff6b6b', 
+                    borderRadius: '12px', 
+                    backgroundColor: '#fff0f0',
+                    textAlign: 'center',
+                    boxShadow: '0 4px 6px rgba(255, 107, 107, 0.1)'
+                }}>
+                    <h3 style={{ color: '#ff6b6b', marginBottom: '15px', fontSize: '18px' }}>🔍 ENCONTRE RESTAURANTES</h3>
+                    <p style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+                        Busque restaurantes que vendem um produto específico
+                    </p>
+                    <input 
+                        value={produtoFiltro} 
+                        onChange={(e) => setProdutoFiltro(e.target.value)}
+                        placeholder="Ex: Pizza, Hambúrguer, Sushi..."
+                        style={{ 
+                            width: '100%', 
+                            padding: '12px', 
+                            marginBottom: '15px', 
+                            textAlign: 'center',
+                            border: '1px solid #ff6b6b',
+                            borderRadius: '6px',
+                            fontSize: '16px'
+                        }}
+                    />
+                    <button 
+                        onClick={() => executarConsulta(restaurantesComProduto, [produtoFiltro])}
+                        disabled={!produtoFiltro.trim()}
+                        style={{
+                            padding: '12px 24px',
+                            backgroundColor: produtoFiltro.trim() ? '#ff6b6b' : '#ccc',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: produtoFiltro.trim() ? 'pointer' : 'not-allowed',
+                            fontWeight: 'bold',
+                            width: '100%',
+                            fontSize: '16px',
+                            transition: 'all 0.3s ease'
+                        }}
+                        onMouseOver={(e) => {
+                            if (produtoFiltro.trim()) {
+                                e.target.style.transform = 'translateY(-2px)';
+                                e.target.style.boxShadow = '0 4px 8px rgba(255, 107, 107, 0.3)';
+                            }
+                        }}
+                        onMouseOut={(e) => {
+                            if (produtoFiltro.trim()) {
+                                e.target.style.transform = 'translateY(0)';
+                                e.target.style.boxShadow = 'none';
+                            }
+                        }}
+                    >
+                        🍽️ Buscar Restaurantes
+                    </button>
+                    <p style={{ fontSize: '12px', color: '#888', marginTop: '10px' }}>
+                        Ex: "Pizza", "Hambúrguer", "Sushi", "Salada"
+                    </p>
+                </div>
+            </div>
+
+            {/* SEÇÃO ORIGINAL - CONSULTAS DE RESTAURANTES (PERMANECE IGUAL) */}
             <h2 style={{ color: '#333', marginBottom: '20px', borderBottom: '2px solid #007bff', paddingBottom: '10px' }}>
                 🍽️ Consultas de Restaurantes
             </h2>
@@ -246,7 +322,7 @@ export default function ConsultasPage() {
                 </div>
             </div>
 
-            {/* SEÇÃO ORIGINAL - CONSULTAS DE PRODUTOS */}
+            {/* SEÇÃO ORIGINAL - CONSULTAS DE PRODUTOS (PERMANECE IGUAL) */}
             <h2 style={{ color: '#333', marginBottom: '20px', borderBottom: '2px solid #28a745', paddingBottom: '10px' }}>
                 📦 Consultas de Produtos
             </h2>
@@ -387,7 +463,7 @@ export default function ConsultasPage() {
                 </div>
             </div>
 
-            {/* Resultados */}
+            {/* Resultados - ATUALIZADO para mostrar melhor a nova consulta */}
             <div style={{ 
                 border: '1px solid #ddd', 
                 borderRadius: '8px', 
@@ -408,25 +484,35 @@ export default function ConsultasPage() {
                     <ul style={{ listStyle: 'none', padding: 0 }}>
                         {resultados.map((item, index) => (
                             <li key={index} style={{ 
-                                padding: '12px', 
-                                margin: '8px 0', 
+                                padding: '15px', 
+                                margin: '10px 0', 
                                 backgroundColor: '#f8f9fa',
                                 border: '1px solid #e9ecef',
-                                borderRadius: '6px',
-                                fontSize: '14px'
+                                borderRadius: '8px',
+                                fontSize: '14px',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                             }}>
                                 {typeof item === 'object' ? (
                                     <div>
-                                        <strong>{item.nome}</strong>
-                                        {item.preco && <span> - R$ {item.preco?.toFixed(2)}</span>}
-                                        {item.tipoCulinaria && <span> - 🍽️ {item.tipoCulinaria}</span>}
-                                        {item.cidade && <span> - 🏙️ {item.cidade}</span>}
-                                        {item.enderecoCompleto && <span> - 📍 {item.enderecoCompleto}</span>}
-                                        {item.nomeRestaurante && <span> - 🍽️ {item.nomeRestaurante}</span>}
-                                        {item.idRestaurante && <span style={{ float: 'right', color: '#666' }}>ID: {item.idRestaurante}</span>}
+                                        <div style={{ fontWeight: 'bold', fontSize: '16px', color: '#333', marginBottom: '5px' }}>
+                                            🏢 {item.nome}
+                                        </div>
+                                        <div style={{ color: '#666' }}>
+                                            {item.tipoCulinaria && <span>🍽️ {item.tipoCulinaria}</span>}
+                                            {item.cidade && <span> • 🏙️ {item.cidade}</span>}
+                                            {item.produtoEncontrado && (
+                                                <span style={{ color: '#28a745', fontWeight: 'bold' }}> • ✅ Tem: {item.produtoEncontrado}</span>
+                                            )}
+                                            {item.preco && <span> • 💰 R$ {item.preco?.toFixed(2)}</span>}
+                                        </div>
+                                        {item.enderecoCompleto && (
+                                            <div style={{ fontSize: '12px', color: '#888', marginTop: '5px' }}>
+                                                📍 {item.enderecoCompleto}
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
-                                    <div>📊 {item}</div>
+                                    <div style={{ fontWeight: 'bold' }}>📊 {item}</div>
                                 )}
                             </li>
                         ))}

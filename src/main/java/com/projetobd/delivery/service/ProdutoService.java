@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProdutoService {
@@ -15,7 +16,7 @@ public class ProdutoService {
 
     // CRUD
     public long criarProduto(Produto p) { return produtoRepository.inserir(p); }
-    public Produto buscarPorId(long id) { return produtoRepository.buscarPorId(id); } // NOVO MÉTODO
+    public Produto buscarPorId(long id) { return produtoRepository.buscarPorId(id); }
     public int atualizarProduto(Produto p) { return produtoRepository.atualizar(p); }
     public int deletarProduto(long id) { return produtoRepository.deletar(id); }
     public List<Produto> listarTodos() { return produtoRepository.listar(); }
@@ -23,4 +24,9 @@ public class ProdutoService {
     public List<Produto> produtosPorFaixaPreco(double precoMin, double precoMax) { return produtoRepository.produtosPorFaixaPreco(precoMin, precoMax); }
     public List<String> restaurantesComContagemProdutos() { return produtoRepository.restaurantesComContagemProdutos(); }
     public List<String> mediaPrecosPorCidade() { return produtoRepository.mediaPrecosPorCidade(); }
+    
+    // NOVO MÉTODO: Restaurantes que possuem determinado produto
+    public List<Map<String, Object>> restaurantesComProduto(String nomeProduto) {
+        return produtoRepository.restaurantesComProduto(nomeProduto);
+    }
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const produtoApi = axios.create({
-    baseURL: "http://localhost:8080"  // ← DEVE SER APENAS ATÉ A PORTA
+    baseURL: "http://localhost:8080"
 });
 
 export const listarProdutos = () => produtoApi.get("/produtos");
@@ -13,6 +13,8 @@ export const produtosComRestaurante = () => produtoApi.get("/produtos/com-restau
 export const produtosPorFaixaPreco = (precoMin, precoMax) => produtoApi.get(`/produtos/faixa-preco?precoMin=${precoMin}&precoMax=${precoMax}`);
 export const restaurantesComContagemProdutos = () => produtoApi.get("/produtos/restaurantes-contagem");
 export const mediaPrecosPorCidade = () => produtoApi.get("/produtos/media-precos-cidade");
+
+// CORREÇÃO: Use produtoApi.get() em vez de axios.get()
 export const restaurantesComProduto = (nomeProduto) => {
-    return axios.get(`http://localhost:8080/produtos/restaurantes-com-produto?produto=${nomeProduto}`);
+    return produtoApi.get(`/produtos/restaurantes-com-produto?produto=${nomeProduto}`);
 };
