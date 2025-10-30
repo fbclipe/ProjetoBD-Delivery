@@ -1,5 +1,7 @@
 package com.projetobd.delivery.entity;
 
+import java.util.List;
+
 public class Produto {
 
     private Long idProduto;
@@ -7,7 +9,7 @@ public class Produto {
     private Double preco;
     private Long idRestaurante;
     private String nomeRestaurante;
-
+    private List<Produto> combo;
     public Produto() {}
 
     public Produto(Long idProduto, String nome, Double preco, Long idRestaurante, String nomeRestaurante) {
@@ -33,4 +35,7 @@ public class Produto {
 
     public String getNomeRestaurante() { return nomeRestaurante; }
     public void setNomeRestaurante(String nomeRestaurante) { this.nomeRestaurante = nomeRestaurante; }
+
+    public List getCombo() { return combo; }
+    public void setCombo() { this.combo = combo; }
 }
