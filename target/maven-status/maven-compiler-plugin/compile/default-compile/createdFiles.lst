@@ -1,9 +1,0 @@
-com\projetobd\delivery\DeliveryApplication.class
-com\projetobd\delivery\entity\Produto.class
-com\projetobd\delivery\repository\ProdutoRepository.class
-com\projetobd\delivery\service\RestauranteService.class
-com\projetobd\delivery\controller\RestauranteController.class
-com\projetobd\delivery\service\ProdutoService.class
-com\projetobd\delivery\controller\ProdutoController.class
-com\projetobd\delivery\repository\RestauranteRepository.class
-com\projetobd\delivery\entity\Restaurante.class
