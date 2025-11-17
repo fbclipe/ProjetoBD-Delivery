@@ -7,7 +7,7 @@ public class Restaurante {
     private String cep;
     private String cidade;
     private String rua;
-    private Integer numero;
+    private String numero;
     private String bairro;
 
     // Getters e Setters
@@ -53,10 +53,10 @@ public class Restaurante {
         this.rua = rua;
     }
 
-    public int getNumero() {
+    public String getNumero() {
         return numero;
     }
-    public void setNumero(int numero) {
+    public void setNumero(String numero) {
         this.numero = numero;
     }
 

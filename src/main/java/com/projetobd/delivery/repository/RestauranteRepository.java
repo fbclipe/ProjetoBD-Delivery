@@ -19,103 +19,91 @@ public class RestauranteRepository {
     private JdbcTemplate jdbcTemplate;
 
     // Inserir restaurante e retornar ID gerado
-   public long inserir(Restaurante r) {
-    String sql = "INSERT INTO restaurante (nome, tipo_culinaria, cep, cidade, rua, numero, bairro) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    KeyHolder keyHolder = new GeneratedKeyHolder();
-    jdbcTemplate.update(connection -> {
-        PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        ps.setString(1, r.getNome());
-        ps.setString(2, r.getTipoCulinaria());
-        ps.setString(3, r.getCep());
-        ps.setString(4, r.getCidade());
-        ps.setString(5, r.getRua());
-        ps.setInt(6, r.getNumero()); // CORRIGIDO: usar setInt
-        ps.setString(7, r.getBairro());
-        return ps;
-    }, keyHolder);
-    return keyHolder.getKey().longValue();
-}
+    public long inserir(Restaurante r) {
+        String sql = "INSERT INTO Restaurante (Nome, TipoCulinaria, CEP, Cidade, Rua, Numero, Bairro) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, r.getNome());
+            ps.setString(2, r.getTipoCulinaria());
+            ps.setString(3, r.getCep());
+            ps.setString(4, r.getCidade());
+            ps.setString(5, r.getRua());
+            ps.setString(6, r.getNumero());  // numero é varchar no banco
+            ps.setString(7, r.getBairro());
+            return ps;
+        }, keyHolder);
+        return keyHolder.getKey().longValue();
+    }
 
     // Atualizar restaurante
     public int atualizar(Restaurante r) {
-        String sql = "UPDATE restaurante SET nome=?, tipo_culinaria=?, cep=?, cidade=?, rua=?, numero=?, bairro=? WHERE id_restaurante=?";
+        String sql = "UPDATE Restaurante SET Nome=?, TipoCulinaria=?, CEP=?, Cidade=?, Rua=?, Numero=?, Bairro=? WHERE idRestaurante=?";
         return jdbcTemplate.update(sql, r.getNome(), r.getTipoCulinaria(), r.getCep(), r.getCidade(), r.getRua(), r.getNumero(), r.getBairro(), r.getIdRestaurante());
     }
 
     // Deletar restaurante
     public int deletar(int id) {
-        String sql = "DELETE FROM restaurante WHERE id_restaurante=?";
+        String sql = "DELETE FROM Restaurante WHERE idRestaurante=?";
         return jdbcTemplate.update(sql, id);
     }
 
     // Listar todos os restaurantes
-    // Listar todos os restaurantes (CORRIGIDO)
-public List<Restaurante> listar() {
-    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
-                 "cep, cidade, rua, COALESCE(numero, 0) as numero, bairro " +  // ← CORREÇÃO
-                 "FROM restaurante";
-    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class));
-}
+    public List<Restaurante> listar() {
+        String sql = "SELECT idRestaurante, Nome, TipoCulinaria, CEP, Cidade, Rua, Numero, Bairro FROM Restaurante";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class));
+    }
 
-// Buscar por cidade (CORRIGIDO)
-public List<Restaurante> buscarPorCidade(String cidade) {
-    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
-                 "cep, cidade, rua, COALESCE(numero, 0) as numero, bairro " +  // ← CORREÇÃO
-                 "FROM restaurante WHERE cidade=?";
-    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), cidade);
-}
+    // Buscar por cidade
+    public List<Restaurante> buscarPorCidade(String cidade) {
+        String sql = "SELECT idRestaurante, Nome, TipoCulinaria, CEP, Cidade, Rua, Numero, Bairro FROM Restaurante WHERE Cidade=?";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), cidade);
+    }
 
-// Buscar por nome (CORRIGIDO)
-public List<Restaurante> buscarPorNome(String nome) {
-    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
-                 "cep, cidade, rua, COALESCE(numero, 0) as numero, bairro " +  // ← CORREÇÃO
-                 "FROM restaurante WHERE nome LIKE ?";
-    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), "%" + nome + "%");
-}
+    // Buscar por nome (LIKE)
+    public List<Restaurante> buscarPorNome(String nome) {
+        String sql = "SELECT idRestaurante, Nome, TipoCulinaria, CEP, Cidade, Rua, Numero, Bairro FROM Restaurante WHERE Nome LIKE ?";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), "%" + nome + "%");
+    }
+
     // Contar restaurantes por cidade (exemplo de agregação)
     public List<String> contarPorCidade() {
-        String sql = "SELECT cidade, COUNT(*) AS total FROM restaurante GROUP BY cidade";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("cidade") + ": " + rs.getInt("total") + " restaurantes");
+        String sql = "SELECT Cidade, COUNT(*) AS total FROM Restaurante GROUP BY Cidade";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("Cidade") + ": " + rs.getInt("total") + " restaurantes");
     }
-
-    // Buscar restaurante por nome (LIKE)
-    
 
     public Restaurante buscarPorId(long id) {
-    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, cep, cidade, rua, numero, bairro FROM restaurante WHERE id_restaurante=?";
-    try {
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Restaurante.class), id);
-    } catch (Exception e) {
-        return null;
+        String sql = "SELECT idRestaurante, Nome, TipoCulinaria, CEP, Cidade, Rua, Numero, Bairro FROM Restaurante WHERE idRestaurante=?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Restaurante.class), id);
+        } catch (Exception e) {
+            return null;
+        }
     }
+
+    // Restaurantes por tipo de culinária
+    public List<Restaurante> buscarPorTipoCulinaria(String tipoCulinaria) {
+        String sql = "SELECT idRestaurante, Nome, TipoCulinaria, CEP, Cidade, Rua, Numero, Bairro FROM Restaurante WHERE TipoCulinaria LIKE ? ORDER BY Nome";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), "%" + tipoCulinaria + "%");
     }
 
-    // RestauranteRepository.java
+    // Restaurantes com endereço completo
+    public List<String> restaurantesComEnderecoCompleto() {
+        String sql = "SELECT Nome, CONCAT(Rua, ', ', Numero, ' - ', Bairro, ', ', Cidade, ' - CEP: ', CEP) as endereco_completo FROM Restaurante ORDER BY Nome";
+        return jdbcTemplate.query(sql, (rs, rowNum) ->
+                "🏢 " + rs.getString("Nome") + " - 📍 " + rs.getString("endereco_completo")
+        );
+    }
 
-// CONSULTA 2: Restaurantes por tipo de culinária
-public List<Restaurante> buscarPorTipoCulinaria(String tipoCulinaria) {
-    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
-                 "cep, cidade, rua, numero, bairro FROM restaurante " +
-                 "WHERE tipo_culinaria LIKE ? ORDER BY nome";
-    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class), "%" + tipoCulinaria + "%");
-}
+    // Restaurantes ordenados por nome
+    public List<Restaurante> restaurantesOrdenadosPorNome() {
+        String sql = "SELECT idRestaurante, Nome, TipoCulinaria, CEP, Cidade, Rua, Numero, Bairro FROM Restaurante ORDER BY Nome ASC";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class));
+    }
 
-// CONSULTA 3: Restaurantes com endereço completo
-public List<String> restaurantesComEnderecoCompleto() {
-    String sql = "SELECT nome, CONCAT(rua, ', ', numero, ' - ', bairro, ', ', cidade, ' - CEP: ', cep) as endereco_completo " +
-                 "FROM restaurante ORDER BY nome";
-    
-    return jdbcTemplate.query(sql, (rs, rowNum) -> 
-        "🏢 " + rs.getString("nome") + " - 📍 " + rs.getString("endereco_completo")
-    );
-}
-
-// CONSULTA 4: Restaurantes ordenados por nome
-public List<Restaurante> restaurantesOrdenadosPorNome() {
-    String sql = "SELECT id_restaurante AS idRestaurante, nome, tipo_culinaria AS tipoCulinaria, " +
-                 "cep, cidade, rua, numero, bairro FROM restaurante ORDER BY nome ASC";
-    return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Restaurante.class));
-}
-
-
+    // Exemplo de função para média de avaliação (presumindo que funcao exista no DB)
+    public Double mediaAvaliacao(long idRestaurante) {
+        String sql = "SELECT fn_media_avaliacao_restaurante(?)";
+        return jdbcTemplate.queryForObject(sql, Double.class, idRestaurante);
+    }
 }

@@ -64,4 +64,9 @@ public class RestauranteService {
         return restauranteRepository.restaurantesOrdenadosPorNome();
     }
 
+    public Double mediaAvaliacao(long idRestaurante) {
+        return restauranteRepository.mediaAvaliacao(idRestaurante);
+    }
+
+
 }

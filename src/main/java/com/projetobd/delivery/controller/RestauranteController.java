@@ -82,4 +82,10 @@ public class RestauranteController {
     public List<String> contarPorCidade() {
         return restauranteService.contarPorCidade();
     }
+
+    @GetMapping("/media-avaliacao/{idRestaurante}")
+    public Double mediaAvaliacao(@PathVariable long idRestaurante) {
+        return restauranteService.mediaAvaliacao(idRestaurante);
+    }
+
 }
