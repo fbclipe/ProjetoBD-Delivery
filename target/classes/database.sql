@@ -1,132 +1,173 @@
-CREATE DATABASE ProjetoBD;
-use ProjetoBD;
+-- Criar banco e usar
+CREATE DATABASE IF NOT EXISTS ProjetoBD;
+USE ProjetoBD;
 
-CREATE TABLE Restaurante (
-                             idRestaurante INT AUTO_INCREMENT PRIMARY KEY,
-                             Nome VARCHAR(100) NOT NULL,
-                             TipoCulinaria VARCHAR(100),
-                             CEP VARCHAR(15),
-                             Cidade VARCHAR(100),
-                             Rua VARCHAR(100),
-                             Numero VARCHAR(10),
-                             Bairro VARCHAR(100)
-);
+-- Tabela Restaurante
+CREATE TABLE IF NOT EXISTS Restaurante (
+                                           idRestaurante INT AUTO_INCREMENT PRIMARY KEY,
+                                           Nome VARCHAR(100) NOT NULL,
+    TipoCulinaria VARCHAR(100),
+    CEP VARCHAR(15),
+    Cidade VARCHAR(100),
+    Rua VARCHAR(100),
+    Numero VARCHAR(10),
+    Bairro VARCHAR(100)
+    );
 
-CREATE TABLE Cliente (
-                         idCliente INT AUTO_INCREMENT PRIMARY KEY,
-                         Nome VARCHAR(100) NOT NULL,
-                         Rua VARCHAR(100),
-                         Numero VARCHAR(10),
-                         Bairro VARCHAR(100),
-                         CEP VARCHAR(15),
-                         Cidade VARCHAR(100),
-                         Tel VARCHAR(20)
-);
+-- Tabela Cliente
+CREATE TABLE IF NOT EXISTS Cliente (
+                                       idCliente INT AUTO_INCREMENT PRIMARY KEY,
+                                       Nome VARCHAR(100) NOT NULL,
+    Rua VARCHAR(100),
+    Numero VARCHAR(10),
+    Bairro VARCHAR(100),
+    CEP VARCHAR(15),
+    Cidade VARCHAR(100),
+    Tel VARCHAR(20)
+    );
 
--- Tabela de logs
-CREATE TABLE LogPagamento (
-                              idLog INT AUTO_INCREMENT PRIMARY KEY,
-                              idPagamento INT,
-                              idPedido INT,
-                              Valor DECIMAL(10,2),
-                              DataLog DATETIME,
-                              Acao VARCHAR(20)
-);
+-- Log de Pagamento
+CREATE TABLE IF NOT EXISTS LogPagamento (
+                                            idLog INT AUTO_INCREMENT PRIMARY KEY,
+                                            idPagamento INT,
+                                            idPedido INT,
+                                            Valor DECIMAL(10,2),
+    DataLog DATETIME,
+    Acao VARCHAR(20)
+    );
 
+-- Avaliacao (FKs com ON DELETE CASCADE, ON UPDATE NO ACTION)
+CREATE TABLE IF NOT EXISTS Avaliacao (
+                                         idAvaliacao INT AUTO_INCREMENT PRIMARY KEY,
+                                         idCliente INT NOT NULL,
+                                         idRestaurante INT NOT NULL,
+                                         Comentario TEXT,
+                                         Nota INT,
+                                         Data DATE,
+                                         CONSTRAINT fk_avaliacao_cliente FOREIGN KEY (idCliente)
+    REFERENCES Cliente(idCliente)
+    ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT fk_avaliacao_restaurante FOREIGN KEY (idRestaurante)
+    REFERENCES Restaurante(idRestaurante)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE Avaliacao (
-                           idAvaliacao INT AUTO_INCREMENT PRIMARY KEY,
-                           idCliente INT NOT NULL,
-                           idRestaurante INT NOT NULL,
-                           Comentario TEXT,
-                           Nota INT,
-                           Data DATE,
-                           FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente),
-                           FOREIGN KEY (idRestaurante) REFERENCES Restaurante(idRestaurante)
-);
+-- Produto
+CREATE TABLE IF NOT EXISTS Produto (
+                                       idProduto INT AUTO_INCREMENT PRIMARY KEY,
+                                       idRestaurante INT NOT NULL,
+                                       Nome VARCHAR(100) NOT NULL,
+    Ingredientes VARCHAR(100),
+    Preco DECIMAL(10,2) NOT NULL,
+    CONSTRAINT fk_produto_restaurante FOREIGN KEY (idRestaurante)
+    REFERENCES Restaurante(idRestaurante)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE Produto (
-                         idProduto INT AUTO_INCREMENT PRIMARY KEY,
-                         idRestaurante INT NOT NULL,
-                         Nome VARCHAR(100) NOT NULL,
-                         Ingredientes VARCHAR(100) NOT NULL,
-                         Preco DECIMAL(10,2) NOT NULL,
-                         FOREIGN KEY (idRestaurante) REFERENCES Restaurante(idRestaurante)
-);
+-- Pedido
+CREATE TABLE IF NOT EXISTS Pedido (
+                                      idPedido INT AUTO_INCREMENT PRIMARY KEY,
+                                      idCliente INT NOT NULL,
+                                      Status VARCHAR(50),
+    PrecoTotal DECIMAL(10,2),
+    dataHora DATETIME,
+    CONSTRAINT fk_pedido_cliente FOREIGN KEY (idCliente)
+    REFERENCES Cliente(idCliente)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE Pedido (
-                        idPedido INT AUTO_INCREMENT PRIMARY KEY,
-                        idCliente INT NOT NULL,
-                        Status VARCHAR(50),
-                        PrecoTotal DECIMAL(10,2),
-                        dataHora DATETIME,
-                        FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
-);
+-- DetalhePedido (chave composta)
+CREATE TABLE IF NOT EXISTS DetalhePedido (
+                                             idPedido INT NOT NULL,
+                                             idProduto INT NOT NULL,
+                                             Quantidade INT NOT NULL,
+                                             Observacao VARCHAR(200),
+    PrecoUnitario DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (idPedido, idProduto),
+    CONSTRAINT fk_detalhepedido_pedido FOREIGN KEY (idPedido)
+    REFERENCES Pedido(idPedido)
+    ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT fk_detalhepedido_produto FOREIGN KEY (idProduto)
+    REFERENCES Produto(idProduto)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE DetalhePedido (
-                               idPedido INT NOT NULL,
-                               idProduto INT NOT NULL,
-                               Quantidade INT NOT NULL,
-                               Observacao VARCHAR(200),
-                               PrecoUnitario DECIMAL(10,2) NOT NULL,
-                               PRIMARY KEY (idPedido, idProduto),
-                               FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido),
-                               FOREIGN KEY (idProduto) REFERENCES Produto(idProduto)
-);
+-- Entregador
+CREATE TABLE IF NOT EXISTS Entregador (
+                                          idEntregador INT AUTO_INCREMENT PRIMARY KEY,
+                                          Nome VARCHAR(100) NOT NULL,
+    Tel VARCHAR(20)
+    );
 
+-- Entrega
+CREATE TABLE IF NOT EXISTS Entrega (
+                                       idEntrega INT AUTO_INCREMENT PRIMARY KEY,
+                                       idPedido INT NOT NULL,
+                                       idEntregador INT NOT NULL,
+                                       dataHoraSaida DATETIME,
+                                       dataHoraChegada DATETIME,
+                                       Status VARCHAR(50),
+    CONSTRAINT fk_entrega_pedido FOREIGN KEY (idPedido)
+    REFERENCES Pedido(idPedido)
+    ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT fk_entrega_entregador FOREIGN KEY (idEntregador)
+    REFERENCES Entregador(idEntregador)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE Entregador (
-                            idEntregador INT AUTO_INCREMENT PRIMARY KEY,
-                            Nome VARCHAR(100) NOT NULL,
-                            Tel VARCHAR(20)
-);
+-- Pagamento
+CREATE TABLE IF NOT EXISTS Pagamento (
+                                         idPagamento INT AUTO_INCREMENT PRIMARY KEY,
+                                         idPedido INT NOT NULL,
+                                         Data DATE,
+                                         Valor DECIMAL(10,2),
+    CONSTRAINT fk_pagamento_pedido FOREIGN KEY (idPedido)
+    REFERENCES Pedido(idPedido)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE Entrega (
-                         idEntrega INT AUTO_INCREMENT PRIMARY KEY,
-                         idPedido INT NOT NULL,
-                         idEntregador INT NOT NULL,
-                         dataHoraSaida DATETIME,
-                         dataHoraChegada DATETIME,
-                         Status VARCHAR(50),
-                         FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido),
-                         FOREIGN KEY (idEntregador) REFERENCES Entregador(idEntregador)
-);
+-- Cartao
+CREATE TABLE IF NOT EXISTS Cartao (
+                                      idPagamento INT PRIMARY KEY,
+                                      Bandeira VARCHAR(50),
+    Numero VARCHAR(20),
+    CONSTRAINT fk_cartao_pagamento FOREIGN KEY (idPagamento)
+    REFERENCES Pagamento(idPagamento)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE Pagamento (
-                           idPagamento INT AUTO_INCREMENT PRIMARY KEY,
-                           idPedido INT NOT NULL,
-                           Data DATE,
-                           Valor DECIMAL(10,2),
-                           FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido)
-);
+-- Pix
+CREATE TABLE IF NOT EXISTS Pix (
+                                   idPagamento INT PRIMARY KEY,
+                                   Chave VARCHAR(100),
+    Banco VARCHAR(100),
+    CONSTRAINT fk_pix_pagamento FOREIGN KEY (idPagamento)
+    REFERENCES Pagamento(idPagamento)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE Cartao (
-                        idPagamento INT PRIMARY KEY,
-                        Bandeira VARCHAR(50),
-                        Numero VARCHAR(20),
-                        FOREIGN KEY (idPagamento) REFERENCES Pagamento(idPagamento)
-);
+-- Dinheiro
+CREATE TABLE IF NOT EXISTS Dinheiro (
+                                        idPagamento INT PRIMARY KEY,
+                                        Troco DECIMAL(10,2),
+    CONSTRAINT fk_dinheiro_pagamento FOREIGN KEY (idPagamento)
+    REFERENCES Pagamento(idPagamento)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE Pix (
-                     idPagamento INT PRIMARY KEY,
-                     Chave VARCHAR(100),
-                     Banco VARCHAR(100),
-                     FOREIGN KEY (idPagamento) REFERENCES Pagamento(idPagamento)
-);
+-- Combo (auto-relacionamento do produto)
+CREATE TABLE IF NOT EXISTS Combo (
+                                     idProduto INT NOT NULL,
+                                     idProdutoCombo INT NOT NULL,
+                                     PRIMARY KEY (idProduto, idProdutoCombo),
+    CONSTRAINT fk_combo_produto FOREIGN KEY (idProduto)
+    REFERENCES Produto(idProduto)
+    ON DELETE CASCADE ON UPDATE NO ACTION,
+    CONSTRAINT fk_combo_produtocombo FOREIGN KEY (idProdutoCombo)
+    REFERENCES Produto(idProduto)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+    );
 
-CREATE TABLE Dinheiro (
-                          idPagamento INT PRIMARY KEY,
-                          Troco DECIMAL(10,2),
-                          FOREIGN KEY (idPagamento) REFERENCES Pagamento(idPagamento)
-);
-
-CREATE TABLE Combo (
-                       idProduto INT NOT NULL,
-                       idProdutoCombo INT NOT NULL,
-                       PRIMARY KEY (idProduto, idProdutoCombo),
-                       FOREIGN KEY (idProduto) REFERENCES Produto(idProduto),
-                       FOREIGN KEY (idProdutoCombo) REFERENCES Produto(idProduto)
-);
 
 -- ============================
 -- INSERTS: 30 registros por tabela
@@ -329,56 +370,51 @@ INSERT INTO Entregador (idEntregador, Nome, Tel) VALUES
                                                      (16,'Vitor Ponte','8197777-0016'),
                                                      (17,'Paula Ágil','8197777-0017'),
                                                      (18,'Igor Volta','8197777-0018'),
-                                                     (19,'Sofia Leve','8197777-0019'),
-                                                     (20,'Diego Ponta','8197777-0020'),
-                                                     (21,'Lucas Giro','8197777-0021'),
-                                                     (22,'Marina Pede','8197777-0022'),
-                                                     (23,'Henrique Livre','8197777-0023'),
-                                                     (24,'Cintia Rápida','8197777-0024'),
-                                                     (25,'Breno Rodas','8197777-0025'),
-                                                     (26,'Natália Velox','8197777-0026'),
-                                                     (27,'Fábio Largo','8197777-0027'),
-                                                     (28,'Marta Corre','8197777-0028'),
-                                                     (29,'Gustavo Ronda','8197777-0029'),
-                                                     (30,'Helena Pede','8197777-0030');
+                                                     (19,'Débora Entrega','8197777-0019'),
+                                                     (20,'Felipe Rápido','8197777-0020'),
+                                                     (21,'Giselle Veloz','8197777-0021'),
+                                                     (22,'Henrique Rota','8197777-0022'),
+                                                     (23,'Juliana Motoboy','8197777-0023'),
+                                                     (24,'Kleber Express','8197777-0024'),
+                                                     (25,'Letícia Ágil','8197777-0025'),
+                                                     (26,'Murilo Correio','8197777-0026'),
+                                                     (27,'Natália Entrega','8197777-0027'),
+                                                     (28,'Otávio Rápido','8197777-0028'),
+                                                     (29,'Priscila Veloz','8197777-0029'),
+                                                     (30,'Quincas Entregador','8197777-0030');
 
 -- ----------------------------
--- Entregas (30) - cada entrega vinculada a um pedido e entregador
+-- Entrega (25) - Apenas pedidos não 'Em preparo'
 -- ----------------------------
 INSERT INTO Entrega (idEntrega, idPedido, idEntregador, dataHoraSaida, dataHoraChegada, Status) VALUES
-                                                                                                    (1,1,1,'2025-09-22 12:20:00','2025-09-22 12:50:00','Em rota'),
-                                                                                                    (2,2,2,'2025-09-22 12:35:00','2025-09-22 13:00:00','Entregue'),
-                                                                                                    (3,3,3,'2025-09-22 13:05:00','2025-09-22 13:30:00','Entregue'),
-                                                                                                    (4,4,4,'2025-09-22 13:25:00','2025-09-22 13:40:00','Entregue'),
-                                                                                                    (5,5,5,'2025-09-22 13:45:00','2025-09-22 14:10:00','Entregue'),
-                                                                                                    (6,6,6,'2025-09-22 14:05:00','2025-09-22 14:40:00','Em rota'),
-                                                                                                    (7,7,7,'2025-09-22 14:25:00','2025-09-22 14:55:00','Entregue'),
-                                                                                                    (8,8,8,'2025-09-22 14:45:00','2025-09-22 15:10:00','Entregue'),
-                                                                                                    (9,9,9,'2025-09-22 15:05:00','2025-09-22 15:25:00','Entregue'),
-                                                                                                    (10,10,10,'2025-09-22 15:25:00','2025-09-22 15:50:00','Entregue'),
-                                                                                                    (11,11,11,'2025-09-22 15:45:00','2025-09-22 16:10:00','Entregue'),
-                                                                                                    (12,12,12,'2025-09-22 16:05:00','2025-09-22 16:35:00','Entregue'),
-                                                                                                    (13,13,13,'2025-09-22 16:25:00','2025-09-22 16:55:00','Em rota'),
-                                                                                                    (14,14,14,'2025-09-22 16:45:00','2025-09-22 17:10:00','Entregue'),
-                                                                                                    (15,15,15,'2025-09-22 17:05:00','2025-09-22 17:30:00','Entregue'),
-                                                                                                    (16,16,16,'2025-09-22 17:25:00','2025-09-22 17:55:00','Entregue'),
-                                                                                                    (17,17,17,'2025-09-22 17:45:00','2025-09-22 18:05:00','Entregue'),
-                                                                                                    (18,18,18,'2025-09-22 18:00:00','2025-09-22 18:20:00','Entregue'),
-                                                                                                    (19,19,19,'2025-09-22 18:25:00','2025-09-22 18:55:00','Entregue'),
-                                                                                                    (20,20,20,'2025-09-22 18:45:00','2025-09-22 19:10:00','Em rota'),
-                                                                                                    (21,21,21,'2025-09-22 19:05:00','2025-09-22 19:35:00','Entregue'),
-                                                                                                    (22,22,22,'2025-09-22 19:25:00','2025-09-22 19:50:00','Entregue'),
-                                                                                                    (23,23,23,'2025-09-22 19:45:00','2025-09-22 20:05:00','Entregue'),
-                                                                                                    (24,24,24,'2025-09-22 20:05:00','2025-09-22 20:25:00','Entregue'),
-                                                                                                    (25,25,25,'2025-09-22 20:25:00','2025-09-22 20:55:00','Entregue'),
-                                                                                                    (26,26,26,'2025-09-22 20:45:00','2025-09-22 21:10:00','Entregue'),
-                                                                                                    (27,27,27,'2025-09-22 21:05:00','2025-09-22 21:25:00','Entregue'),
-                                                                                                    (28,28,28,'2025-09-22 21:25:00','2025-09-22 21:45:00','Entregue'),
-                                                                                                    (29,29,29,'2025-09-22 21:45:00','2025-09-22 22:10:00','Entregue'),
-                                                                                                    (30,30,30,'2025-09-22 22:05:00','2025-09-22 22:25:00','Em rota');
+                                                                                                    (1,2,2,'2025-09-22 12:40:00','2025-09-22 13:00:00','Concluída'),
+                                                                                                    (2,3,3,'2025-09-22 13:10:00','2025-09-22 13:30:00','Concluída'),
+                                                                                                    (3,4,4,'2025-09-22 13:30:00','2025-09-22 13:50:00','Concluída'),
+                                                                                                    (4,5,5,'2025-09-22 13:50:00','2025-09-22 14:10:00','Concluída'),
+                                                                                                    (5,7,7,'2025-09-22 14:30:00','2025-09-22 14:50:00','Concluída'),
+                                                                                                    (6,8,8,'2025-09-22 14:50:00','2025-09-22 15:10:00','Concluída'),
+                                                                                                    (7,9,9,'2025-09-22 15:10:00','2025-09-22 15:30:00','Concluída'),
+                                                                                                    (8,10,10,'2025-09-22 15:30:00','2025-09-22 15:50:00','Concluída'),
+                                                                                                    (9,11,11,'2025-09-22 15:50:00','2025-09-22 16:10:00','Concluída'),
+                                                                                                    (10,12,12,'2025-09-22 16:10:00','2025-09-22 16:30:00','Concluída'),
+                                                                                                    (11,14,14,'2025-09-22 16:50:00','2025-09-22 17:10:00','Concluída'),
+                                                                                                    (12,15,15,'2025-09-22 17:10:00','2025-09-22 17:30:00','Concluída'),
+                                                                                                    (13,16,16,'2025-09-22 17:30:00','2025-09-22 17:50:00','Concluída'),
+                                                                                                    (14,17,17,'2025-09-22 17:50:00','2025-09-22 18:10:00','Concluída'),
+                                                                                                    (15,18,18,'2025-09-22 18:10:00','2025-09-22 18:30:00','Concluída'),
+                                                                                                    (16,19,19,'2025-09-22 18:30:00','2025-09-22 18:50:00','Concluída'),
+                                                                                                    (17,21,21,'2025-09-22 19:10:00','2025-09-22 19:30:00','Concluída'),
+                                                                                                    (18,22,22,'2025-09-22 19:30:00','2025-09-22 19:50:00','Concluída'),
+                                                                                                    (19,23,23,'2025-09-22 19:50:00','2025-09-22 20:10:00','Concluída'),
+                                                                                                    (20,24,24,'2025-09-22 20:10:00','2025-09-22 20:30:00','Concluída'),
+                                                                                                    (21,25,25,'2025-09-22 20:30:00','2025-09-22 20:50:00','Concluída'),
+                                                                                                    (22,26,26,'2025-09-22 20:50:00','2025-09-22 21:10:00','Concluída'),
+                                                                                                    (23,27,27,'2025-09-22 21:10:00','2025-09-22 21:30:00','Concluída'),
+                                                                                                    (24,28,28,'2025-09-22 21:30:00','2025-09-22 21:50:00','Concluída'),
+                                                                                                    (25,29,29,'2025-09-22 21:50:00','2025-09-22 22:10:00','Concluída');
 
 -- ----------------------------
--- Pagamentos (30) - um por pedido
+-- Pagamento (30)
 -- ----------------------------
 INSERT INTO Pagamento (idPagamento, idPedido, Data, Valor) VALUES
                                                                (1,1,'2025-09-22',32.00),
@@ -413,92 +449,59 @@ INSERT INTO Pagamento (idPagamento, idPedido, Data, Valor) VALUES
                                                                (30,30,'2025-09-22',12.00);
 
 -- ----------------------------
--- Distribuição dos tipos de pagamento
--- Cartão: ids 1..12 ; Pix: 13..22 ; Dinheiro: 23..30
+-- Cartao (10)
 -- ----------------------------
--- Cartões (1..12)
 INSERT INTO Cartao (idPagamento, Bandeira, Numero) VALUES
-                                                       (1,'Visa','4539-0000-0000-0001'),
-                                                       (2,'Mastercard','5375-0000-0000-0002'),
-                                                       (3,'Elo','5078-0000-0000-0003'),
-                                                       (4,'Visa','4539-0000-0000-0004'),
-                                                       (5,'Mastercard','5375-0000-0000-0005'),
-                                                       (6,'Visa','4539-0000-0000-0006'),
-                                                       (7,'Mastercard','5375-0000-0000-0007'),
-                                                       (8,'Elo','5078-0000-0000-0008'),
-                                                       (9,'Visa','4539-0000-0000-0009'),
-                                                       (10,'Mastercard','5375-0000-0000-0010'),
-                                                       (11,'Elo','5078-0000-0000-0011'),
-                                                       (12,'Visa','4539-0000-0000-0012');
+                                                       (1,'Mastercard','4000123456780001'),
+                                                       (4,'Visa','4111222233334444'),
+                                                       (7,'Elo','6363000011112222'),
+                                                       (10,'Mastercard','4000123456780002'),
+                                                       (13,'Visa','4111222233334445'),
+                                                       (16,'Elo','6363000011112223'),
+                                                       (19,'Mastercard','4000123456780003'),
+                                                       (22,'Visa','4111222233334446'),
+                                                       (25,'Elo','6363000011112224'),
+                                                       (28,'Mastercard','4000123456780004');
 
--- Pix (13..22)
+-- ----------------------------
+-- Pix (10)
+-- ----------------------------
 INSERT INTO Pix (idPagamento, Chave, Banco) VALUES
-                                                (13,'mariana.pix@recife','Banco do Brasil'),
-                                                (14,'carlos.pix@recife','Bradesco'),
-                                                (15,'ana.pix@recife','Itaú'),
-                                                (16,'pedro.pix@recife','Santander'),
-                                                (17,'joana.pix@recife','Caixa'),
-                                                (18,'marcelo.pix@recife','Banco do Brasil'),
-                                                (19,'luiza.pix@recife','Bradesco'),
-                                                (20,'rafael.pix@recife','Itaú'),
-                                                (21,'patricia.pix@recife','Santander'),
-                                                (22,'bruno.pix@recife','Caixa');
+                                                (2,'81999990002@email.com','Banco do Brasil'),
+                                                (5,'11122233344','Caixa Econômica'),
+                                                (8,'81999990008','Itaú'),
+                                                (11,'44455566677','Santander'),
+                                                (14,'81999990014@email.com','Nubank'),
+                                                (17,'77788899900','Banco do Brasil'),
+                                                (20,'81999990020','Caixa Econômica'),
+                                                (23,'10120230340','Itaú'),
+                                                (26,'81999990026@email.com','Santander'),
+                                                (29,'40450560670','Nubank');
 
--- Dinheiro (23..30) - apenas troco informado
+-- ----------------------------
+-- Dinheiro (10)
+-- ----------------------------
 INSERT INTO Dinheiro (idPagamento, Troco) VALUES
-                                              (23,2.00),
-                                              (24,5.00),
-                                              (25,0.00),
-                                              (26,3.50),
-                                              (27,1.00),
-                                              (28,0.50),
-                                              (29,4.00),
-                                              (30,0.00);
+                                              (3,0.00),
+                                              (6,5.00),
+                                              (9,1.00),
+                                              (12,0.00),
+                                              (15,2.00),
+                                              (18,3.50),
+                                              (21,0.00),
+                                              (24,3.00),
+                                              (27,4.00),
+                                              (30,8.00);
 
 -- ----------------------------
--- Avaliações (30) - clientes avaliando restaurantes
+-- Combo (6)
 -- ----------------------------
-INSERT INTO Avaliacao (idAvaliacao, idCliente, idRestaurante, Comentario, Nota, Data) VALUES
-                                                                                          (1,1,1,'Comida excelente e atendimento rápido',5,'2025-09-22'),
-                                                                                          (2,2,2,'Ótimo peixe, porém o arroz estava frio',4,'2025-09-22'),
-                                                                                          (3,3,3,'Lasanha bem temperada',5,'2025-09-21'),
-                                                                                          (4,4,4,'Pastel crocante',4,'2025-09-20'),
-                                                                                          (5,5,5,'Acarajé com sabor caseiro',5,'2025-09-19'),
-                                                                                          (6,6,6,'Carne suculenta',5,'2025-09-18'),
-                                                                                          (7,7,7,'Salmão fresco e bem cortado',5,'2025-09-17'),
-                                                                                          (8,8,8,'Hambúrguer leve e saboroso',4,'2025-09-16'),
-                                                                                          (9,9,9,'Café ótimo para a manhã',5,'2025-09-15'),
-                                                                                          (10,10,10,'Pizza com massa fina',4,'2025-09-14'),
-                                                                                          (11,11,11,'Cheeseburger bem montado',4,'2025-09-13'),
-                                                                                          (12,12,12,'Risoto al dente e cremoso',5,'2025-09-12'),
-                                                                                          (13,13,13,'Comida da vó, muito bom',5,'2025-09-11'),
-                                                                                          (14,14,14,'Feijoada saborosa',4,'2025-09-10'),
-                                                                                          (15,15,15,'Tapioca com ótima textura',5,'2025-09-09'),
-                                                                                          (16,16,16,'Carne de sol macia',5,'2025-09-08'),
-                                                                                          (17,17,17,'Pão fresquinho',5,'2025-09-07'),
-                                                                                          (18,18,18,'Bolinho crocante',4,'2025-09-06'),
-                                                                                          (19,19,19,'Prato sofisticado e bem servido',5,'2025-09-05'),
-                                                                                          (20,20,20,'Baião gostoso e bem temperado',4,'2025-09-04'),
-                                                                                          (21,21,21,'Peixe com tempero caseiro',4,'2025-09-03'),
-                                                                                          (22,22,22,'Yakissoba com muito molho',3,'2025-09-02'),
-                                                                                          (23,23,23,'Brigadeiro delicioso',5,'2025-09-01'),
-                                                                                          (24,24,24,'Hambúrguer vegano muito bom',5,'2025-08-31'),
-                                                                                          (25,25,25,'Churrasco no ponto',5,'2025-08-30'),
-                                                                                          (26,26,26,'Galo com quiabo autêntico',4,'2025-08-29'),
-                                                                                          (27,27,27,'Sorvete cremoso',5,'2025-08-28'),
-                                                                                          (28,28,28,'Prato simples e honesto',4,'2025-08-27'),
-                                                                                          (29,29,29,'Bacalhau bem preparado',5,'2025-08-26'),
-                                                                                          (30,30,30,'Cuscuz com manteiga maravilhoso',5,'2025-08-25');
-
--- ----------------------------
--- Combo (30) - pares de produtos
--- ----------------------------
-INSERT INTO Combo (idProduto, idProdutoCombo) VALUES
-                                                  (1,2),(2,3),(3,4),(4,5),(5,6),(6,7),(7,8),(8,9),(9,10),(10,11),
-                                                  (11,12),(12,13),(13,14),(14,15),(15,16),(16,17),(17,18),(18,19),(19,20),(20,21),
-                                                  (21,22),(22,23),(23,24),(24,25),(25,26),(26,27),(27,28),(28,29),(29,30),(30,1);
-
-
+INSERT INTO Combo (idProduto, idProdutoCombo) VALUES (1, 4);
+INSERT INTO Combo (idProduto, idProdutoCombo) VALUES (6, 18);
+INSERT INTO Combo (idProduto, idProdutoCombo) VALUES (11, 27);
+INSERT INTO Combo (idProduto, idProdutoCombo) VALUES (10, 23);
+INSERT INTO Combo (idProduto, idProdutoCombo) VALUES (14, 30);
+INSERT INTO Combo (idProduto, idProdutoCombo) VALUES (28, 4);
 INSERT INTO LogPagamento (idPagamento, idPedido, Valor, DataLog, Acao) VALUES
                                                                            (1, 10, 150.00, '2025-11-16 20:00:00', 'CRIACAO'),
                                                                            (2, 11, 200.50, '2025-11-16 20:05:00', 'ATUALIZACAO'),
