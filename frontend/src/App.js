@@ -13,12 +13,13 @@ import PedidoList from "./components/PedidoList";
 import FuncoesPage from "./pages/FuncoesPage";
 import ProceduresPage from "./pages/ProceduresPage";
 import TriggersPage from "./pages/TriggersPage";
+import ConsultasAvancadasPage from "./pages/ConsultasAvancadasPage";
 
 function App() {
-    return (
-        <Router>
+    return ( <Router>
             <div style={{ display: "flex" }}>
 
+                ```
                 {/* MENU LATERAL */}
                 <nav style={{
                     width: "220px",
@@ -42,6 +43,7 @@ function App() {
                         <hr />
 
                         <li><Link to="/consultas">Consultas</Link></li>
+                        <li><Link to="/consultas-avancadas">Consultas Avançadas</Link></li>
                         <li><Link to="/graficos">Gráficos</Link></li>
                     </ul>
                 </nav>
@@ -62,9 +64,11 @@ function App() {
                         <Route path="/procedures" element={<ProceduresPage />} />
                         <Route path="/triggers" element={<TriggersPage />} />
 
-
-                        {/* Consultas e gráficos */}
+                        {/* Consultas */}
                         <Route path="/consultas" element={<ConsultasPage />} />
+                        <Route path="/consultas-avancadas" element={<ConsultasAvancadasPage />} />
+
+                        {/* Gráficos */}
                         <Route path="/graficos" element={<GraficosPage />} />
                     </Routes>
                 </main>
@@ -72,6 +76,8 @@ function App() {
             </div>
         </Router>
     );
+
+
 }
 
 export default App;
